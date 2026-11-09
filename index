@@ -1,0 +1,2247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Troy Cowboys 10U | Staff Hub & Player Matrix</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --surface: #131b2e;
+      --surface-card: #1a243b;
+      --border: #283553;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.15);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #a855f7;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 95px;
+    }
+
+    /* Sticky Header */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand h1 { font-size: 1.1rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+    .brand span { font-size: 0.72rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .sync-status {
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+    /* Bottom Navigation Bar */
+    nav.bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 4px calc(8px + env(safe-area-inset-bottom, 0px));
+      z-index: 100;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .nav-btn svg { width: 20px; height: 20px; fill: currentColor; }
+    .nav-btn.active { color: var(--accent); }
+
+    /* Container */
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Cards & Form Elements */
+    .card {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      margin-bottom: 14px;
+    }
+
+    .form-group { margin-bottom: 14px; }
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 4px;
+    }
+    label .hint {
+      font-size: 0.74rem;
+      font-weight: normal;
+      color: var(--text-muted);
+      display: block;
+      margin-top: 2px;
+    }
+    input[type="text"], input[type="password"], input[type="date"], select, textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    textarea { min-height: 80px; resize: vertical; }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    .btn-submit:hover { background: var(--primary-hover); }
+    .btn-submit:disabled { opacity: 0.5; }
+
+    .btn-action {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-action:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-danger { color: var(--danger); border-color: rgba(239, 68, 68, 0.35); }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.15); border-color: var(--danger); }
+    .btn-success { color: var(--success); border-color: rgba(16, 185, 129, 0.35); }
+    .btn-success:hover { background: rgba(16, 185, 129, 0.15); border-color: var(--success); }
+    .btn-purple { color: #d8b4fe; border-color: rgba(168, 85, 247, 0.4); }
+    .btn-purple:hover { background: rgba(168, 85, 247, 0.15); border-color: var(--purple); color: #fff; }
+
+    /* Feed Tab Styles */
+    .feed-actions-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .feed-select-toolbar {
+      display: none;
+      background: #1e1b4b;
+      border: 1px solid var(--purple);
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 14px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .feed-item {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .feed-item.selected-for-delete {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.05);
+    }
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+    .feed-author-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .feed-checkbox {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--danger);
+      cursor: pointer;
+      display: none;
+    }
+    .feed-author { font-weight: 700; font-size: 0.92rem; color: #fff; }
+    .feed-date { font-size: 0.75rem; color: var(--text-muted); }
+    .feed-section { margin-bottom: 10px; }
+    .feed-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 2px 7px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 3px;
+    }
+    .tag-riser { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .tag-struggler { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .tag-miscast { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .tag-scheme { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; }
+    .feed-text { font-size: 0.88rem; color: #cbd5e1; }
+
+    /* Matrix Controls & Search Bar */
+    .matrix-controls-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .matrix-search-wrap {
+      position: relative;
+      flex: 2;
+      min-width: 180px;
+    }
+    .matrix-search-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 9px 12px 9px 34px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    .matrix-search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .matrix-search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      fill: var(--text-muted);
+      pointer-events: none;
+    }
+    .matrix-sort-select {
+      flex: 1;
+      min-width: 130px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 9px 10px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+    }
+
+    /* Player Matrix Cards */
+    .player-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+    .player-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .player-name-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .jersey-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #1e293b;
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      font-weight: 800;
+      font-size: 0.82rem;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-family: monospace;
+      letter-spacing: -0.02em;
+    }
+    .player-name { font-size: 1.05rem; font-weight: 700; color: #fff; }
+    .player-pos-badge {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      background: #0f172a;
+      color: #94a3b8;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .rec-box {
+      background: rgba(37, 99, 235, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rec-box svg { width: 18px; height: 18px; fill: var(--accent); flex-shrink: 0; }
+    .rec-label { font-size: 0.7rem; color: var(--accent); text-transform: uppercase; font-weight: 700; }
+    .rec-title { font-size: 0.85rem; font-weight: 600; color: #fff; }
+
+    .sliders-grid { display: grid; gap: 8px; }
+    .slider-row {
+      background: var(--surface);
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .slider-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .slider-score { color: var(--accent); font-weight: 700; }
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: #283553;
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+
+    /* Editable Coaching Notes Section in Matrix */
+    .card-notes-edit-block {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .card-notes-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 5px;
+    }
+    .notes-save-indicator {
+      font-size: 0.7rem;
+      color: var(--success);
+      display: none;
+    }
+    .card-notes-textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: #e2e8f0;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-family: inherit;
+      min-height: 62px;
+      resize: vertical;
+      line-height: 1.4;
+    }
+    .card-notes-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: #0f172a;
+    }
+
+    /* Summary Tab Table & Badges */
+    .summary-table-wrap {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    table.summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      text-align: left;
+      background: var(--surface-card);
+    }
+    table.summary-table th {
+      background: #111827;
+      color: #94a3b8;
+      font-weight: 700;
+      padding: 10px 12px;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    table.summary-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+      vertical-align: middle;
+    }
+    table.summary-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .status-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .badge-matched { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-shift { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    /* Roster & Staff Management List */
+    .manage-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .manage-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      border-radius: 8px;
+      gap: 8px;
+    }
+    .manage-item-info { flex: 1; }
+    .manage-item-title { font-weight: 600; font-size: 0.88rem; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .manage-item-subtitle {
+      font-size: 0.76rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+    .manage-item-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    /* Gemini Tab */
+    .gemini-banner {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(168, 85, 247, 0.2));
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .gemini-banner h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .gemini-banner p { font-size: 0.8rem; color: #cbd5e1; }
+    .prompt-preview-box {
+      background: #060a12;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: #e2e8f0;
+      white-space: pre-wrap;
+      max-height: 280px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+      padding: 16px;
+    }
+    .modal {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 460px;
+      padding: 20px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-large {
+      max-width: 640px;
+    }
+
+    /* Rubric Guide Modal Formatting */
+    .rubric-section {
+      margin-bottom: 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 14px;
+    }
+    .rubric-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+    .rubric-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .rubric-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-style: italic;
+    }
+    .rubric-item {
+      display: flex;
+      gap: 10px;
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .rubric-score {
+      font-weight: 800;
+      width: 22px;
+      height: 22px;
+      background: #1e293b;
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.75rem;
+    }
+    .rubric-item-body strong { color: #f1f5f9; }
+    .rubric-item-body span { color: #94a3b8; }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Header -->
+  <header>
+    <div class="brand">
+      <h1>Troy Cowboys 10U</h1>
+      <span>Staff Diagnostics & Player Matrix</span>
+    </div>
+    <div class="sync-status" id="cloudStatus">
+      <div class="sync-dot"></div>
+      <span id="syncText">Connecting Cloud...</span>
+    </div>
+  </header>
+
+  <!-- Main View Area -->
+  <main>
+    <!-- TAB 1: WEEKLY SURVEY -->
+    <section id="tab-survey" class="tab-content active">
+      <div class="card">
+        <h2 class="card-title">Weekly Staff Diagnostic</h2>
+        <p class="card-subtitle">Log observations post-game. Updates sync to all coaches in real time.</p>
+
+        <form id="surveyForm">
+          <div class="form-group">
+            <label for="coachSelect">Coach Name</label>
+            <select id="coachSelect" required>
+              <!-- Injected dynamically from staff list -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="surveyDate">Game / Review Date</label>
+            <input type="date" id="surveyDate" required>
+          </div>
+
+          <div class="form-group">
+            <label for="inputRiser">
+              1. The Riser
+              <span class="hint">Who surprised you with effort, aggression, or execution?</span>
+            </label>
+            <textarea id="inputRiser" placeholder="e.g. Brandon Ross (LB) – Diagnosed gap schemes instantly..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="inputStruggler">
+              2. The Struggler
+              <span class="hint">Who looks lost, hesitant, or overwhelmed by processing?</span>
+            </label>
+            <textarea id="inputStruggler" placeholder="e.g. Caleb Moore (DE) – Over-pursuing backside containment..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="inputMiscast">
+              3. The Miscast Player
+              <span class="hint">Who is out of position and where should we test them?</span>
+            </label>
+            <textarea id="inputMiscast" placeholder="e.g. Tyrell Davis – Playing outside CB; tackling suggests Strong Safety..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="inputScheme">
+              4. The Scheme Check
+              <span class="hint">What assignment, play, or concept isn't working on the field?</span>
+            </label>
+            <textarea id="inputScheme" placeholder="e.g. Red zone Cover 3 is vulnerable to seam routes..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <span>Submit Weekly Review</span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- TAB 2: STAFF FEED -->
+    <section id="tab-feed" class="tab-content">
+      <div class="feed-actions-bar">
+        <h2 style="font-size:1.1rem; font-weight:700;">Coaches' Feedback Feed</h2>
+        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+          <select id="feedFilter" style="width:auto; padding:6px 10px; font-size:0.8rem;">
+            <option value="ALL">All Coaches</option>
+          </select>
+          <button class="btn-action btn-purple" id="toggleSelectModeBtn" onclick="toggleSelectMode()">
+            <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+            <span id="selectModeBtnText">Select Items</span>
+          </button>
+          <button class="btn-action btn-danger" onclick="openClearFeedModal()">
+            <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            Clear All
+          </button>
+        </div>
+      </div>
+
+      <!-- Feed Selection Action Toolbar -->
+      <div class="feed-select-toolbar" id="feedSelectToolbar">
+        <div style="font-size:0.8rem; font-weight:700; color:#fff;">
+          <span id="selectedCountText">0 selected</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-action" style="font-size:0.75rem; padding:4px 8px;" onclick="selectAllFeedItems()">Select All</button>
+          <button class="btn-action btn-danger" style="font-size:0.75rem; padding:4px 10px;" onclick="openDeleteSelectedModal()">
+            Delete Selected
+          </button>
+          <button class="btn-action" style="font-size:0.75rem; padding:4px 8px;" onclick="cancelSelectMode()">Cancel</button>
+        </div>
+      </div>
+
+      <div id="feedList">
+        <!-- Feed entries inserted here -->
+      </div>
+    </section>
+
+    <!-- TAB 3: ATTRIBUTE MATRIX (SEARCH, NUMBER SORT & RUBRIC GUIDE) -->
+    <section id="tab-matrix" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+        <div>
+          <h2 style="font-size:1.1rem; font-weight:700;">Player Attribute Matrix</h2>
+          <span style="font-size:0.75rem; color:var(--text-muted);">Adjust 1-5 sliders or update notes</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-action btn-purple" onclick="openRubricModal()" style="font-size:0.76rem; padding:6px 10px;">
+            <svg style="width:15px; height:15px; fill:currentColor;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            Scoring Rubric & Guide
+          </button>
+          <button class="btn-action" onclick="openAddPlayerModal()">+ Add Player</button>
+        </div>
+      </div>
+
+      <!-- Search & Sort Controls -->
+      <div class="matrix-controls-bar">
+        <div class="matrix-search-wrap">
+          <svg class="matrix-search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" id="matrixSearchInput" class="matrix-search-input" placeholder="Search by player name or #..." oninput="handleMatrixSearchChange()">
+        </div>
+
+        <select id="matrixSortSelect" class="matrix-sort-select" onchange="handleMatrixSortChange()">
+          <option value="number_asc">Sort: # Number (Low-High)</option>
+          <option value="number_desc">Sort: # Number (High-Low)</option>
+          <option value="name_asc">Sort: Player Name (A-Z)</option>
+          <option value="position">Sort: Position</option>
+        </select>
+      </div>
+
+      <div id="playerList">
+        <!-- Player matrix cards inserted here -->
+      </div>
+    </section>
+
+    <!-- TAB 4: SUMMARY BOARD -->
+    <section id="tab-summary" class="tab-content">
+      <div class="card">
+        <div class="card-title">
+          <span>Roster & Position Alignment Board</span>
+          <button class="btn-action btn-success" onclick="exportSummaryCSV()">
+            <svg style="width:15px; height:15px; fill:currentColor;" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Export CSV
+          </button>
+        </div>
+        <p class="card-subtitle">Real-time comparison of current roster positions against calculated matrix recommendations.</p>
+
+        <div class="summary-table-wrap">
+          <table class="summary-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Player</th>
+                <th>Current Pos</th>
+                <th>Scores (C-S-L-P)</th>
+                <th>Recommended Fit</th>
+                <th>Fit Status</th>
+              </tr>
+            </thead>
+            <tbody id="summaryTableBody">
+              <!-- Summary rows inserted dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: GEMINI AI SKILL BRIEFING -->
+    <section id="tab-gemini" class="tab-content">
+      <div class="gemini-banner">
+        <h3>
+          <svg style="width:20px; height:20px; fill:#a855f7;" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          Gemini Youth Football Insights
+        </h3>
+        <p>Prepares live survey feedback and matrix grades to trigger your <strong>youth-football-insights</strong> skill for coaching meetings.</p>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title" style="margin-bottom:8px;">Live Prompt for Gemini</h3>
+        <p class="card-subtitle">Tap below to copy the prompt and paste it directly into Gemini.</p>
+        
+        <div class="prompt-preview-box" id="geminiPromptBox">Generating prompt...</div>
+        
+        <div style="display:flex; gap:10px;">
+          <button class="btn-submit" onclick="copyGeminiPrompt()" style="background:var(--purple); flex:2;">
+            <svg style="width:18px; height:18px; fill:currentColor;" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            <span id="copyBtnText">Copy Prompt for Gemini</span>
+          </button>
+          <button class="btn-action" onclick="refreshGeminiPrompt()" style="flex:1; justify-content:center;">Refresh</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: ROSTER & STAFF MANAGEMENT -->
+    <section id="tab-manage" class="tab-content">
+      <!-- Full Team Backup, Export & Password-Protected Import -->
+      <div class="card">
+        <div class="card-title">
+          <span>Complete Backup & Import (All Data + Feed)</span>
+        </div>
+        <p class="card-subtitle">Exports or restores the entire system: roster numbers, positions, 1-5 matrix ratings, coaching notes, staff list, and all feed logs. Importing requires the staff password.</p>
+        
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <button class="btn-action btn-success" onclick="exportCompleteTeamBackup()" style="flex:1; justify-content:center; padding:10px;">
+            <svg style="width:16px; height:16px; fill:currentColor;" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Export Complete Backup
+          </button>
+
+          <button class="btn-action btn-purple" onclick="openImportModal()" style="flex:1; justify-content:center; padding:10px;">
+            <svg style="width:16px; height:16px; fill:currentColor;" viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+            Import Backup File (Protected)
+          </button>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn-action" onclick="exportFullRosterCSV()" style="flex:1; justify-content:center; font-size:0.75rem;">
+            Export Roster CSV Only
+          </button>
+        </div>
+      </div>
+
+      <!-- Manage Roster -->
+      <div class="card">
+        <div class="card-title">
+          <span>Roster & Positions (<span id="rosterCount">0</span> Players)</span>
+          <button class="btn-action" onclick="openAddPlayerModal()">+ Add Player</button>
+        </div>
+        <p class="card-subtitle">Change any player's number, position, or remove them from the active roster.</p>
+        <div class="manage-list" id="playersManageList">
+          <!-- Player items with Edit buttons -->
+        </div>
+      </div>
+
+      <!-- Manage Coaches -->
+      <div class="card">
+        <div class="card-title">
+          <span>Coaching Staff List</span>
+          <button class="btn-action" onclick="openAddCoachModal()">+ Add Coach</button>
+        </div>
+        <p class="card-subtitle">Coaches appearing in the survey dropdown and feedback filters.</p>
+        <div class="manage-list" id="coachesManageList">
+          <!-- Coach items -->
+        </div>
+      </div>
+
+      <!-- Cloud Status Card -->
+      <div class="card">
+        <h3 class="card-title">Cloud Backend Status</h3>
+        <p class="card-subtitle">Connected to Firebase Project: <strong>tc-coach-feedback</strong>.</p>
+        <div style="font-size:0.8rem; color:#94a3b8; line-height:1.6; margin-bottom:12px;">
+          • Real-time synchronization active across all coaching staff devices.<br>
+          • Data is permanently stored in Google Cloud Firestore.
+        </div>
+        <button class="btn-action btn-danger" onclick="resetToTeamDefaults()" style="width:100%; justify-content:center;">Reset Cloud Data to Team Baseline Defaults</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="switchTab('survey')">
+      <svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      <span>Survey</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('feed')">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+      <span>Feed</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('matrix')">
+      <svg viewBox="0 0 24 24"><path d="M16 11V3H8v8H2v10h20V11h-6zm-6-6h4v6h-4V5zm-6 8h4v6H4v-6zm16 6h-4v-6h4v6z"/></svg>
+      <span>Matrix</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('summary')">
+      <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+      <span>Board</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('gemini')">
+      <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+      <span>AI Brief</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('manage')">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      <span>Roster</span>
+    </button>
+  </nav>
+
+  <!-- Modal: Add Player -->
+  <div class="modal-overlay" id="addPlayerModal">
+    <div class="modal">
+      <h3 style="margin-bottom:12px; color:#fff;">Add Roster Player</h3>
+      <div style="display:flex; gap:10px;">
+        <div class="form-group" style="width:90px;">
+          <label>Jersey #</label>
+          <input type="text" id="newPlayerNumber" placeholder="e.g. 52">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label>Player Name</label>
+          <input type="text" id="newPlayerName" placeholder="e.g. Tyler Washington" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Current Position</label>
+        <input type="text" id="newPlayerPos" placeholder="e.g. Cornerback (CB)">
+      </div>
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button class="btn-action" style="flex:1; justify-content:center;" onclick="closeModal('addPlayerModal')">Cancel</button>
+        <button class="btn-submit" style="flex:2;" onclick="saveNewPlayer()">Save Player</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Edit Player Number & Position -->
+  <div class="modal-overlay" id="editPositionModal">
+    <div class="modal">
+      <h3 style="margin-bottom:4px; color:#fff;">Edit Player Details</h3>
+      <p id="editPositionPlayerName" style="font-size:0.85rem; color:var(--accent); font-weight:700; margin-bottom:14px;"></p>
+      
+      <input type="hidden" id="editPositionPlayerId">
+
+      <div class="form-group">
+        <label for="editPlayerNumber">Jersey Number</label>
+        <input type="text" id="editPlayerNumber" placeholder="e.g. 7, 52, 99">
+      </div>
+
+      <div class="form-group">
+        <label for="editPositionPreset">Preset Position Quick Pick</label>
+        <select id="editPositionPreset" onchange="handlePresetPick(this.value)">
+          <option value="">-- Or Select Standard Position --</option>
+          <option value="Defensive Tackle (DT)">Defensive Tackle (DT)</option>
+          <option value="Nose Tackle (NT)">Nose Tackle (NT)</option>
+          <option value="Defensive End (DE)">Defensive End (DE)</option>
+          <option value="Middle Linebacker (MIKE)">Middle Linebacker (MIKE)</option>
+          <option value="Outside Linebacker (OLB)">Outside Linebacker (OLB)</option>
+          <option value="Cornerback (CB)">Cornerback (CB)</option>
+          <option value="Strong Safety (SS)">Strong Safety (SS)</option>
+          <option value="Free Safety (FS)">Free Safety (FS)</option>
+          <option value="Quarterback (QB)">Quarterback (QB)</option>
+          <option value="Running Back (RB)">Running Back (RB)</option>
+          <option value="Fullback (FB)">Fullback (FB)</option>
+          <option value="Wide Receiver (WR)">Wide Receiver (WR)</option>
+          <option value="Tight End (TE)">Tight End (TE)</option>
+          <option value="Center (C)">Center (C)</option>
+          <option value="Offensive Guard (OG)">Offensive Guard (OG)</option>
+          <option value="Offensive Tackle (OT)">Offensive Tackle (OT)</option>
+          <option value="Athlete">Athlete</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="editPositionCustom">Position Name / Notation</label>
+        <input type="text" id="editPositionCustom" placeholder="e.g. Strong Safety (SS) / Nickel" required>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button class="btn-action" style="flex:1; justify-content:center;" onclick="closeModal('editPositionModal')">Cancel</button>
+        <button class="btn-submit" style="flex:2;" onclick="saveUpdatedPosition()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Clear Feed Password -->
+  <div class="modal-overlay" id="clearFeedModal">
+    <div class="modal">
+      <h3 style="margin-bottom:6px; color:#fff;">Clear All Staff Feed?</h3>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">
+        This will permanently delete all weekly coaching diagnostic reviews from the cloud database. Enter the authorization password to proceed.
+      </p>
+
+      <div class="form-group">
+        <label for="clearFeedPassword">Authorization Password</label>
+        <input type="password" id="clearFeedPassword" placeholder="Enter password" autocomplete="off">
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button class="btn-action" style="flex:1; justify-content:center;" onclick="closeModal('clearFeedModal')">Cancel</button>
+        <button class="btn-submit btn-danger" style="flex:2; background:var(--danger);" onclick="executeClearFeed()">Clear All Feed</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Delete Selected Feed Items Password -->
+  <div class="modal-overlay" id="deleteSelectedModal">
+    <div class="modal">
+      <h3 style="margin-bottom:6px; color:#fff;">Delete Selected Feed Items?</h3>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">
+        You have selected <strong id="deleteSelectedCountPrompt" style="color:#fff;">0</strong> item(s) to permanently remove. Enter authorization password to confirm.
+      </p>
+
+      <div class="form-group">
+        <label for="deleteSelectedPassword">Authorization Password</label>
+        <input type="password" id="deleteSelectedPassword" placeholder="Enter password" autocomplete="off">
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button class="btn-action" style="flex:1; justify-content:center;" onclick="closeModal('deleteSelectedModal')">Cancel</button>
+        <button class="btn-submit btn-danger" style="flex:2; background:var(--danger);" onclick="executeDeleteSelectedFeed()">Delete Selected</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Password-Protected Import -->
+  <div class="modal-overlay" id="importModal">
+    <div class="modal">
+      <h3 style="margin-bottom:6px; color:#fff;">Import System Backup</h3>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">
+        Select your backup file (.json or .csv). Restoring data requires authorization password.
+      </p>
+
+      <div class="form-group">
+        <label for="importPassword">Authorization Password</label>
+        <input type="password" id="importPassword" placeholder="Enter password" autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label for="importFileInput">Select Backup File (.json or .csv)</label>
+        <input type="file" id="importFileInput" accept=".json,.csv" style="padding:6px; font-size:0.8rem;">
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button class="btn-action" style="flex:1; justify-content:center;" onclick="closeModal('importModal')">Cancel</button>
+        <button class="btn-submit btn-purple" style="flex:2; background:var(--purple);" onclick="executePasswordProtectedImport()">Verify & Import</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Coach -->
+  <div class="modal-overlay" id="addCoachModal">
+    <div class="modal">
+      <h3 style="margin-bottom:12px; color:#fff;">Add Coach</h3>
+      <div class="form-group">
+        <label>Coach Name & Title</label>
+        <input type="text" id="newCoachName" placeholder="e.g. Coach Smith (Quarterbacks)" required>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button class="btn-action" style="flex:1; justify-content:center;" onclick="closeModal('addCoachModal')">Cancel</button>
+        <button class="btn-submit" style="flex:2;" onclick="saveNewCoach()">Save Coach</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Scoring Rubric & Guide (NEW) -->
+  <div class="modal-overlay" id="rubricModal">
+    <div class="modal modal-large">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="color:#fff; font-size:1.1rem; display:flex; align-items:center; gap:8px;">
+          <span>📖 Player Attribute Scoring Rubric (9U/10U)</span>
+        </h3>
+        <button class="btn-action" style="padding:4px 8px;" onclick="closeModal('rubricModal')">✕ Close</button>
+      </div>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:16px;">
+        Use this standardized 1–5 scale to score players objectively based on game film and practice execution.
+      </p>
+
+      <!-- 1. Contact Courage -->
+      <div class="rubric-section">
+        <div class="rubric-title">1. Contact Courage (Aggression)</div>
+        <div class="rubric-desc">Physical willingness to initiate contact, drive through blocks, and play without flinching.</div>
+        <div class="rubric-item"><div class="rubric-score">1</div><div class="rubric-item-body"><strong>Contact Avoider:</strong> <span>Turns sideways; jumps back or falls down on ball carrier approaches; ducks head.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">2</div><div class="rubric-item-body"><strong>Passive Absorber:</strong> <span>Waits for runners to hit them; catches blocks with chest; arm-tackles from the side.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">3</div><div class="rubric-item-body"><strong>Solid / Situational:</strong> <span>Tackles well head-on; blocks kids their own size; hesitates vs bigger kids or pullers.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">4</div><div class="rubric-item-body"><strong>Willing Striker:</strong> <span>Fires off snap; squares up runners in hole; drives feet on contact until the whistle.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">5</div><div class="rubric-item-body"><strong>The Enforcer:</strong> <span>Relentless; seeks contact every single play; destroys lead pullers; unblocked blitzes without fear.</span></div></div>
+      </div>
+
+      <!-- 2. Speed & Movement -->
+      <div class="rubric-section">
+        <div class="rubric-title">2. Speed & Movement</div>
+        <div class="rubric-desc">Functional game speed: first-step burst, hip fluidity, lateral scrapes, and pursuit angles.</div>
+        <div class="rubric-item"><div class="rubric-score">1</div><div class="rubric-item-body"><strong>Stationary:</strong> <span>Heavy feet; takes 3–4 steps to change direction; gets beaten outside; trails play by 10+ yards.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">2</div><div class="rubric-item-body"><strong>Straight-Line Limited:</strong> <span>Decent motor once moving, but stiff hips; cannot mirror shifty backs in space.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">3</div><div class="rubric-item-body"><strong>Average Team Speed:</strong> <span>Keeps up with flow; tracks plays within 5–7 yards; won't outrun secondary in open field.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">4</div><div class="rubric-item-body"><strong>Quick Twitch / Burst:</strong> <span>Beats pursuit angles to edge; scrapes sideline-to-sideline; separates on intermediate routes.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">5</div><div class="rubric-item-body"><strong>Breakaway Burst:</strong> <span>House-call threat on any touch; outruns pursuit angles; closes 5-yard gaps in deep coverage.</span></div></div>
+      </div>
+
+      <!-- 3. Size & Leverage -->
+      <div class="rubric-section">
+        <div class="rubric-title">3. Size & Leverage</div>
+        <div class="rubric-desc">Natural center of gravity, pad level, knee bend, and anchoring against physical push.</div>
+        <div class="rubric-item"><div class="rubric-score">1</div><div class="rubric-item-body"><strong>High & Stiff:</strong> <span>Stands straight up at snap; bends at waist not knees; easily knocked over by equal-sized kids.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">2</div><div class="rubric-item-body"><strong>Light Anchor:</strong> <span>Pushed backward on bull rushes; easily shed when engaged; struggles to maintain base.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">3</div><div class="rubric-item-body"><strong>Balanced Base:</strong> <span>Absorbs blocks without giving ground; stalemates equal opponents; maintains solid posture.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">4</div><div class="rubric-item-body"><strong>Natural Pad Level:</strong> <span>Plays with bent knees; strikes upward from hips; hard to move; moves line on double teams.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">5</div><div class="rubric-item-body"><strong>Immovable Anchor:</strong> <span>Dominates point of attack; commands double teams; resets line of scrimmage in backfield.</span></div></div>
+      </div>
+
+      <!-- 4. Processing (Football IQ) -->
+      <div class="rubric-section">
+        <div class="rubric-title">4. Processing (Football IQ)</div>
+        <div class="rubric-desc">Retention of play calls, reaction speed, recognition of flow, and discipline vs misdirection.</div>
+        <div class="rubric-item"><div class="rubric-score">1</div><div class="rubric-item-body"><strong>Lost / Overwhelmed:</strong> <span>Lines up wrong; misses snap count; forgets play call after huddle; panics on motion.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">2</div><div class="rubric-item-body"><strong>Hesitant Reactor:</strong> <span>Needs coach cues before snap; takes 1–2 false steps on counters/reverses; slow to react.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">3</div><div class="rubric-item-body"><strong>Assignment-Sure:</strong> <span>Executes calls reliably; rarely jumps offside; solid base execution but tricked by misdirection.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">4</div><div class="rubric-item-body"><strong>Quick Diagnostician:</strong> <span>Reads backfield mesh quickly; sniffs out screens and reverses; calls out offensive strength.</span></div></div>
+        <div class="rubric-item"><div class="rubric-score">5</div><div class="rubric-item-body"><strong>Coach on the Field:</strong> <span>Knows everyone's alignment; reminds team of snap count; triggers downhill instantly on run-read.</span></div></div>
+      </div>
+
+      <!-- Threshold Logic Summary -->
+      <div class="rubric-section" style="border-bottom:none;">
+        <div class="rubric-title" style="color:var(--purple);">Automatic Positional Alignment Logic</div>
+        <div style="font-size:0.8rem; color:#cbd5e1; line-height:1.5;">
+          • <strong>Courage ≥ 4 & Leverage ≥ 4:</strong> Nose Tackle (0/1-Tech) / Interior O-Line<br>
+          • <strong>Courage ≥ 4 & Speed ≥ 4:</strong> Middle Linebacker / Edge Rusher / Lead Fullback<br>
+          • <strong>Speed ≥ 4 & Processing ≥ 4:</strong> Quarterback / Free Safety / Outside X-Receiver<br>
+          • <strong>Courage ≥ 4 only:</strong> Box Safety / Nickel / Strong-side DE<br>
+          • <strong>Speed ≥ 4 only:</strong> Cornerback / Tailback / Slot Receiver<br>
+          • <strong>Balanced (2-3 across):</strong> Offensive Tackle / Tight End / Boundary Corner (Developing)
+        </div>
+      </div>
+
+      <button class="btn-submit" onclick="closeModal('rubricModal')" style="margin-top:12px;">Got It</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs and App Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, setDoc, doc, addDoc, deleteDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyB_QNdO6zOfIhAXoUybDvj8FVUczETOtEk",
+      authDomain: "tc-coach-feedback.firebaseapp.com",
+      projectId: "tc-coach-feedback",
+      storageBucket: "tc-coach-feedback.firebasestorage.app",
+      messagingSenderId: "697370744993",
+      appId: "1:697370744993:web:6b732ff5e4cf556785f8e0",
+      measurementId: "G-F4YN0XJ1GS"
+    };
+
+    // Initialize Firebase & Firestore
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Initial Team Defaults with Jersey Numbers
+    const DEFAULT_COACHES = [
+      "Head Coach Mena",
+      "Coach Vance (Def. Coord.)",
+      "Coach Miller (Off. Coord.)",
+      "Coach Davis (Special Teams)",
+      "Booth Coach"
+    ];
+
+    const DEFAULT_PLAYERS = [
+      { id: 'p1', number: '72', name: 'Marcus Miller', pos: 'Defensive Tackle (DT)', courage: 5, speed: 3, leverage: 5, iq: 4, notes: 'Elite natural anchor vs double teams. High football IQ on interior run fits.' },
+      { id: 'p2', number: '21', name: 'Tyrell Davis', pos: 'Cornerback (CB)', courage: 5, speed: 3, leverage: 4, iq: 4, notes: 'Physical run defender with exceptional tackling technique. Lacks top-end recovery speed for CB island.' },
+      { id: 'p3', number: '11', name: 'Jordan Hayes', pos: 'Wide Receiver (WR)', courage: 3, speed: 5, leverage: 4, iq: 4, notes: 'Rare vertical speed and high-point catch radius. Stretches field cleanly on deep routes.' },
+      { id: 'p4', number: '7',  name: 'Devon Brooks', pos: 'Wide Receiver (WR)', courage: 4, speed: 5, leverage: 3, iq: 3, notes: 'Dynamic burst with ball in space. Shifty hips; better getting downhill handoffs & screens.' },
+      { id: 'p5', number: '54', name: 'Brandon Ross', pos: 'Inside Linebacker (ILB)', courage: 5, speed: 4, leverage: 4, iq: 5, notes: 'Defensive signal caller; reads offensive formations instantly and triggers downhill.' },
+      { id: 'p6', number: '88', name: 'Caleb Moore', pos: 'Defensive End (DE)', courage: 3, speed: 4, leverage: 3, iq: 2, notes: 'Quick first step on passing downs. Needs discipline holding edge against outside zone.' }
+    ];
+
+    const DEFAULT_FEED = [
+      {
+        id: 'f1',
+        coach: 'Coach Vance (Def. Coord.)',
+        date: '2024-10-14',
+        riser: 'Brandon Ross (LB) – Diagnosing gap schemes instantly; led team with 8 solo tackles in scrimmage.',
+        struggler: 'Caleb Moore (DE) – Over-pursuing backside containment; vulnerable to bootlegs and reverse plays.',
+        miscast: 'Jayden Smith – Playing OLB edge; lacks bend for speed rush, looks like an interior run-stopper.',
+        scheme: 'Red zone Cover 3 is vulnerable to seam routes; recommend bracket coverage on tight ends.',
+        timestamp: 1728950400000
+      },
+      {
+        id: 'f2',
+        coach: 'Coach Davis (Special Teams)',
+        date: '2024-10-14',
+        riser: 'Nate Torres (S) – Outstanding open-field tackling on kickoff coverage; huge energy booster.',
+        struggler: 'Tyler Washington (Ret.) – Hesitant on punt catches; muffed two fielding attempts in high wind.',
+        miscast: 'Nate Torres – Elite contact courage; should get immediate defensive reps at box safety.',
+        scheme: 'Punt shield alignment is leaving the interior B-gap vulnerable to overload rush.',
+        timestamp: 1728950300000
+      },
+      {
+        id: 'f3',
+        coach: 'Coach Vance (Def. Coord.)',
+        date: '2024-10-07',
+        riser: 'Marcus Miller (DT) – Dominating double teams; explosive first step disrupting interior run lanes.',
+        struggler: 'Liam Chen (CB) – Struggling with zone discipline; biting hard on play-action fakes.',
+        miscast: 'Tyrell Davis – Playing outside CB; tackling and leverage suggest an immediate move to strong safety.',
+        scheme: '3rd & long sub-package is getting burned on crossers; need to mix in 2-man under.',
+        timestamp: 1728345600000
+      },
+      {
+        id: 'f4',
+        coach: 'Coach Miller (Off. Coord.)',
+        date: '2024-10-07',
+        riser: 'Jordan Hayes (WR) – High-pointing contested balls; crisp intermediate route-running in red zone.',
+        struggler: 'Ethan Walker (OT) – Beaten by speed rush in 2-minute drills; footwork getting lazy on edge.',
+        miscast: 'Devon Brooks – Playing slot WR; vision and acceleration are tailor-made for third-down RB.',
+        scheme: 'Pistol inside zone is stalling vs stacked boxes; must integrate perimeter screens and RPOs.',
+        timestamp: 1728345500000
+      }
+    ];
+
+    // Local in-memory state
+    window.appState = {
+      coaches: DEFAULT_COACHES,
+      players: DEFAULT_PLAYERS,
+      feed: DEFAULT_FEED,
+      isSelectMode: false,
+      selectedFeedIds: new Set(),
+      searchQuery: '',
+      sortOption: 'number_asc'
+    };
+
+    // Date pre-fill
+    document.getElementById('surveyDate').value = new Date().toISOString().split('T')[0];
+
+    // Recommended position rule engine
+    window.calcPosition = function(c, s, l, q) {
+      if (c >= 4 && l >= 4) return "Nose Tackle (0/1-Tech) / Interior O-Line";
+      if (c >= 4 && s >= 4) return "Middle Linebacker / Edge / Lead Fullback";
+      if (s >= 4 && q >= 4) return "Quarterback / Free Safety / X-Receiver";
+      if (c >= 4) return "Box Safety / Nickel / Strong-side DE";
+      if (s >= 4) return "Cornerback / Tailback / Slot Receiver";
+      if (l >= 4) return "Offensive Tackle / Defensive End";
+      return "Offensive Tackle / Tight End / Boundary Corner (Developing)";
+    };
+
+    // Render Coaches
+    window.renderCoachesUI = function() {
+      const select = document.getElementById('coachSelect');
+      const filter = document.getElementById('feedFilter');
+      const manageList = document.getElementById('coachesManageList');
+
+      const currSelectVal = select.value;
+      const currFilterVal = filter.value;
+
+      select.innerHTML = '<option value="">-- Select Coach --</option>';
+      filter.innerHTML = '<option value="ALL">All Coaches</option>';
+      manageList.innerHTML = '';
+
+      window.appState.coaches.forEach((c, index) => {
+        const opt1 = document.createElement('option');
+        opt1.value = c;
+        opt1.textContent = c;
+        select.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = c;
+        opt2.textContent = c;
+        filter.appendChild(opt2);
+
+        const item = document.createElement('div');
+        item.className = 'manage-item';
+        item.innerHTML = `
+          <span class="manage-item-title">${c}</span>
+          <button class="btn-action btn-danger" onclick="deleteCoach(${index})">Remove</button>
+        `;
+        manageList.appendChild(item);
+      });
+
+      if (currSelectVal) select.value = currSelectVal;
+      if (currFilterVal) filter.value = currFilterVal;
+    };
+
+    // Render Manage Players
+    window.renderManagePlayersUI = function() {
+      const list = document.getElementById('playersManageList');
+      const countLabel = document.getElementById('rosterCount');
+      if (countLabel) countLabel.textContent = window.appState.players.length;
+
+      list.innerHTML = '';
+      // Sort roster by jersey number for roster management view
+      const sorted = [...window.appState.players].sort((a,b) => {
+        const numA = parseInt(a.number) || 999;
+        const numB = parseInt(b.number) || 999;
+        return numA - numB;
+      });
+
+      sorted.forEach(p => {
+        const item = document.createElement('div');
+        item.className = 'manage-item';
+        item.innerHTML = `
+          <div class="manage-item-info">
+            <div class="manage-item-title">
+              <span class="jersey-badge">#${p.number || '--'}</span>
+              <span>${p.name}</span>
+            </div>
+            <div class="manage-item-subtitle">${p.pos || 'Unassigned'}</div>
+          </div>
+          <div class="manage-item-actions">
+            <button class="btn-action" style="color:var(--accent); border-color:rgba(56,189,248,0.4);" onclick="openEditPositionModal('${p.id}')">
+              <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+              Edit
+            </button>
+            <button class="btn-action btn-danger" onclick="deletePlayer('${p.id}')">
+              <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            </button>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    };
+
+    // Helper: Filter and Sort Players for Matrix Tab
+    window.getProcessedPlayers = function() {
+      let list = [...window.appState.players];
+
+      // 1. Search Query Filter (by name or number)
+      const q = (window.appState.searchQuery || '').trim().toLowerCase();
+      if (q) {
+        list = list.filter(p => {
+          const nameMatch = (p.name || '').toLowerCase().includes(q);
+          const numMatch = (p.number || '').toString().toLowerCase().includes(q);
+          const posMatch = (p.pos || '').toLowerCase().includes(q);
+          return nameMatch || numMatch || posMatch;
+        });
+      }
+
+      // 2. Sort Order
+      const sort = window.appState.sortOption || 'number_asc';
+      list.sort((a, b) => {
+        const numA = parseInt(a.number) || 999;
+        const numB = parseInt(b.number) || 999;
+
+        if (sort === 'number_asc') {
+          if (numA !== numB) return numA - numB;
+          return a.name.localeCompare(b.name);
+        } else if (sort === 'number_desc') {
+          if (numA !== numB) return numB - numA;
+          return a.name.localeCompare(b.name);
+        } else if (sort === 'name_asc') {
+          return a.name.localeCompare(b.name);
+        } else if (sort === 'position') {
+          return (a.pos || '').localeCompare(b.pos || '');
+        }
+        return 0;
+      });
+
+      return list;
+    };
+
+    // Render Matrix Cards
+    window.renderMatrix = function() {
+      const container = document.getElementById('playerList');
+      container.innerHTML = '';
+
+      const processed = window.getProcessedPlayers();
+
+      if (processed.length === 0) {
+        container.innerHTML = `
+          <div style="color:var(--text-muted); text-align:center; padding:40px 10px; background:var(--surface-card); border-radius:12px; border:1px solid var(--border);">
+            No players found matching "<strong>${window.appState.searchQuery}</strong>".
+          </div>
+        `;
+        return;
+      }
+
+      processed.forEach(p => {
+        const rec = window.calcPosition(p.courage, p.speed, p.leverage, p.iq);
+        const card = document.createElement('div');
+        card.className = 'player-card';
+        card.innerHTML = `
+          <div class="player-card-header">
+            <div class="player-name-wrap">
+              <span class="jersey-badge">#${p.number || '--'}</span>
+              <span class="player-name">${p.name}</span>
+            </div>
+            <span class="player-pos-badge">${p.pos || 'Athlete'}</span>
+          </div>
+
+          <div class="rec-box">
+            <svg viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
+            <div>
+              <div class="rec-label">Recommended Fit</div>
+              <div class="rec-title">${rec}</div>
+            </div>
+          </div>
+
+          <div class="sliders-grid">
+            <div class="slider-row">
+              <div class="slider-label-row">
+                <span>Contact Courage (Aggression)</span>
+                <span class="slider-score">${p.courage}/5</span>
+              </div>
+              <input type="range" min="1" max="5" value="${p.courage}" onchange="updateScore('${p.id}', 'courage', this.value)">
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-label-row">
+                <span>Speed & Movement</span>
+                <span class="slider-score">${p.speed}/5</span>
+              </div>
+              <input type="range" min="1" max="5" value="${p.speed}" onchange="updateScore('${p.id}', 'speed', this.value)">
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-label-row">
+                <span>Size & Leverage</span>
+                <span class="slider-score">${p.leverage}/5</span>
+              </div>
+              <input type="range" min="1" max="5" value="${p.leverage}" onchange="updateScore('${p.id}', 'leverage', this.value)">
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-label-row">
+                <span>Processing (Football IQ)</span>
+                <span class="slider-score">${p.iq}/5</span>
+              </div>
+              <input type="range" min="1" max="5" value="${p.iq}" onchange="updateScore('${p.id}', 'iq', this.value)">
+            </div>
+          </div>
+
+          <!-- DIRECTLY EDITABLE COACHING NOTES -->
+          <div class="card-notes-edit-block">
+            <div class="card-notes-label">
+              <span>Coaching Notes & Scouting</span>
+              <span class="notes-save-indicator" id="notes-saved-${p.id}">✓ Saved</span>
+            </div>
+            <textarea class="card-notes-textarea" id="notes-text-${p.id}" placeholder="Tap to write/edit coach observations, practice reps, or scheme notes..." onblur="updatePlayerNotes('${p.id}', this.value)">${p.notes || ''}</textarea>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    };
+
+    window.handleMatrixSearchChange = function() {
+      window.appState.searchQuery = document.getElementById('matrixSearchInput').value;
+      renderMatrix();
+    };
+
+    window.handleMatrixSortChange = function() {
+      window.appState.sortOption = document.getElementById('matrixSortSelect').value;
+      renderMatrix();
+    };
+
+    // Save Updated Coaching Notes to Firestore
+    window.updatePlayerNotes = async function(id, text) {
+      const p = window.appState.players.find(x => x.id === id);
+      if (p && p.notes !== text) {
+        p.notes = text;
+        const indicator = document.getElementById(`notes-saved-${id}`);
+        if (indicator) {
+          indicator.style.display = 'inline';
+          setTimeout(() => { indicator.style.display = 'none'; }, 2000);
+        }
+        try {
+          await setDoc(doc(db, 'players', p.id), p);
+        } catch (e) {
+          console.error("Firestore notes update error:", e);
+        }
+      }
+    };
+
+    // Render Summary Table
+    window.renderSummary = function() {
+      const tbody = document.getElementById('summaryTableBody');
+      tbody.innerHTML = '';
+
+      const sorted = [...window.appState.players].sort((a,b) => {
+        const numA = parseInt(a.number) || 999;
+        const numB = parseInt(b.number) || 999;
+        return numA - numB;
+      });
+
+      sorted.forEach(p => {
+        const rec = window.calcPosition(p.courage, p.speed, p.leverage, p.iq);
+        
+        const posNorm = (p.pos || '').toLowerCase();
+        const recNorm = rec.toLowerCase();
+        let isMatch = false;
+        if (posNorm.includes('dt') || posNorm.includes('tackle') || posNorm.includes('line') || posNorm.includes('guard')) {
+          if (recNorm.includes('tackle') || recNorm.includes('line')) isMatch = true;
+        } else if (posNorm.includes('wr') || posNorm.includes('receiver') || posNorm.includes('rb')) {
+          if (recNorm.includes('receiver') || recNorm.includes('tailback') || recNorm.includes('slot') || recNorm.includes('quarterback')) isMatch = true;
+        } else if (posNorm.includes('cb') || posNorm.includes('safety') || posNorm.includes('db')) {
+          if (recNorm.includes('safety') || recNorm.includes('corner') || recNorm.includes('nickel')) isMatch = true;
+        } else if (posNorm.includes('lb') || posNorm.includes('linebacker') || posNorm.includes('de') || posNorm.includes('edge')) {
+          if (recNorm.includes('linebacker') || recNorm.includes('edge') || recNorm.includes('fullback')) isMatch = true;
+        }
+
+        const badgeClass = isMatch ? 'badge-matched' : 'badge-shift';
+        const badgeLabel = isMatch ? 'Aligned Fit' : 'Role Shift Advised';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><span class="jersey-badge">#${p.number || '--'}</span></td>
+          <td style="font-weight:700;">${p.name}</td>
+          <td>${p.pos || 'Athlete'}</td>
+          <td><span style="font-family:monospace; color:var(--accent);">${p.courage}-${p.speed}-${p.leverage}-${p.iq}</span></td>
+          <td style="font-weight:600; color:#fff;">${rec}</td>
+          <td><span class="status-badge ${badgeClass}">${badgeLabel}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    };
+
+    // Render Feed with Selection Checkboxes for Specific Deletion
+    window.renderFeed = function(filter = 'ALL') {
+      const container = document.getElementById('feedList');
+      container.innerHTML = '';
+      
+      const filtered = window.appState.feed.filter(item => {
+        if (filter === 'ALL') return true;
+        return item.coach === filter;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:40px 20px;">No reviews logged yet. Feed is clean.</div>';
+        return;
+      }
+
+      filtered.forEach(item => {
+        const isSelected = window.appState.selectedFeedIds.has(item.id);
+        const card = document.createElement('div');
+        card.className = `feed-item ${isSelected ? 'selected-for-delete' : ''}`;
+        card.id = `feed-item-${item.id}`;
+        card.innerHTML = `
+          <div class="feed-header">
+            <div class="feed-author-wrap">
+              <input type="checkbox" class="feed-checkbox" id="chk-${item.id}" ${isSelected ? 'checked' : ''} onchange="handleFeedCheckboxChange('${item.id}', this.checked)">
+              <span class="feed-author">${item.coach}</span>
+            </div>
+            <span class="feed-date">${item.date}</span>
+          </div>
+
+          <div class="feed-section">
+            <span class="feed-tag tag-riser">1. The Riser</span>
+            <div class="feed-text">${item.riser}</div>
+          </div>
+
+          <div class="feed-section">
+            <span class="feed-tag tag-struggler">2. The Struggler</span>
+            <div class="feed-text">${item.struggler}</div>
+          </div>
+
+          <div class="feed-section">
+            <span class="feed-tag tag-miscast">3. The Miscast Player</span>
+            <div class="feed-text">${item.miscast}</div>
+          </div>
+
+          <div class="feed-section">
+            <span class="feed-tag tag-scheme">4. Scheme Check</span>
+            <div class="feed-text">${item.scheme}</div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      updateCheckboxesVisibility();
+    };
+
+    // Toggle Selection Mode for Feed Deletion
+    window.toggleSelectMode = function() {
+      window.appState.isSelectMode = !window.appState.isSelectMode;
+      const toolbar = document.getElementById('feedSelectToolbar');
+      const btnText = document.getElementById('selectModeBtnText');
+      if (window.appState.isSelectMode) {
+        toolbar.style.display = 'flex';
+        btnText.textContent = 'Exit Selection';
+      } else {
+        cancelSelectMode();
+      }
+      updateCheckboxesVisibility();
+    };
+
+    window.cancelSelectMode = function() {
+      window.appState.isSelectMode = false;
+      window.appState.selectedFeedIds.clear();
+      document.getElementById('feedSelectToolbar').style.display = 'none';
+      document.getElementById('selectModeBtnText').textContent = 'Select Items';
+      updateCheckboxesVisibility();
+      renderFeed(document.getElementById('feedFilter').value);
+    };
+
+    function updateCheckboxesVisibility() {
+      const boxes = document.querySelectorAll('.feed-checkbox');
+      boxes.forEach(b => {
+        b.style.display = window.appState.isSelectMode ? 'inline-block' : 'none';
+      });
+      updateSelectedCountText();
+    }
+
+    window.handleFeedCheckboxChange = function(id, isChecked) {
+      if (isChecked) {
+        window.appState.selectedFeedIds.add(id);
+      } else {
+        window.appState.selectedFeedIds.delete(id);
+      }
+      const itemEl = document.getElementById(`feed-item-${id}`);
+      if (itemEl) {
+        if (isChecked) itemEl.classList.add('selected-for-delete');
+        else itemEl.classList.remove('selected-for-delete');
+      }
+      updateSelectedCountText();
+    };
+
+    window.selectAllFeedItems = function() {
+      const filter = document.getElementById('feedFilter').value;
+      const filtered = window.appState.feed.filter(item => {
+        if (filter === 'ALL') return true;
+        return item.coach === filter;
+      });
+      filtered.forEach(item => window.appState.selectedFeedIds.add(item.id));
+      renderFeed(filter);
+    };
+
+    function updateSelectedCountText() {
+      const count = window.appState.selectedFeedIds.size;
+      const label = document.getElementById('selectedCountText');
+      if (label) label.textContent = `${count} selected`;
+    }
+
+    // Modal: Delete Selected
+    window.openDeleteSelectedModal = function() {
+      const count = window.appState.selectedFeedIds.size;
+      if (count === 0) {
+        alert("Please check at least one review to delete.");
+        return;
+      }
+      document.getElementById('deleteSelectedCountPrompt').textContent = count;
+      document.getElementById('deleteSelectedPassword').value = '';
+      document.getElementById('deleteSelectedModal').style.display = 'flex';
+    };
+
+    // Execute Delete Selected with Password Verification
+    window.executeDeleteSelectedFeed = async function() {
+      const password = document.getElementById('deleteSelectedPassword').value;
+      if (password !== "TroyCowboys!!") {
+        alert("Incorrect password! Unable to delete items.");
+        return;
+      }
+
+      closeModal('deleteSelectedModal');
+
+      try {
+        const batch = writeBatch(db);
+        window.appState.selectedFeedIds.forEach(id => {
+          batch.delete(doc(db, 'reviews', id));
+        });
+        await batch.commit();
+
+        const deletedCount = window.appState.selectedFeedIds.size;
+        window.appState.feed = window.appState.feed.filter(f => !window.appState.selectedFeedIds.has(f.id));
+        cancelSelectMode();
+        alert(`✓ Successfully deleted ${deletedCount} review(s).`);
+      } catch (err) {
+        console.error("Error deleting selected feed items:", err);
+        alert("Error deleting items: " + err.message);
+      }
+    };
+
+    // Build Gemini Skill Briefing Prompt
+    window.buildGeminiPrompt = function() {
+      let prompt = `Analyze our 9U/10U Troy Cowboys youth football team data using the youth-football-insights skill.\n\n`;
+      prompt += `### LATEST WEEKLY COACHING SURVEY SUBMISSIONS:\n`;
+      window.appState.feed.slice(0, 4).forEach((f, i) => {
+        prompt += `${i+1}. [${f.date}] ${f.coach}:\n`;
+        prompt += `   - The Riser: ${f.riser}\n`;
+        prompt += `   - The Struggler: ${f.struggler}\n`;
+        prompt += `   - The Miscast Player: ${f.miscast}\n`;
+        prompt += `   - Scheme Check: ${f.scheme}\n`;
+      });
+
+      prompt += `\n### CURRENT PLAYER ATTRIBUTE MATRIX (1-5 RATINGS):\n`;
+      prompt += `Number | Player | Current Pos | Courage | Speed | Leverage | Processing | Calculated Rec Fit\n`;
+      prompt += `---|---|---|---|---|---|---|---\n`;
+      const sorted = [...window.appState.players].sort((a,b) => (parseInt(a.number)||999) - (parseInt(b.number)||999));
+      sorted.forEach(p => {
+        const rec = window.calcPosition(p.courage, p.speed, p.leverage, p.iq);
+        prompt += `#${p.number || '--'} | ${p.name} | ${p.pos} | ${p.courage} | ${p.speed} | ${p.leverage} | ${p.iq} | ${rec}\n`;
+      });
+
+      prompt += `\n### MISSION:\nSynthesize the findings for our upcoming coaching staff meeting: identify key Risers, provide corrective drills for the Strugglers, and confirm where to move the Miscast players in practice.`;
+      return prompt;
+    };
+
+    window.refreshGeminiPrompt = function() {
+      const box = document.getElementById('geminiPromptBox');
+      box.textContent = window.buildGeminiPrompt();
+    };
+
+    window.copyGeminiPrompt = async function() {
+      const text = window.buildGeminiPrompt();
+      try {
+        await navigator.clipboard.writeText(text);
+        const btnText = document.getElementById('copyBtnText');
+        btnText.textContent = "✓ Copied to Clipboard!";
+        setTimeout(() => { btnText.textContent = "Copy Prompt for Gemini"; }, 2500);
+      } catch (err) {
+        alert("Clipboard copy failed. Please select text manually.");
+      }
+    };
+
+    // Navigation Switcher
+    window.switchTab = function(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+      document.getElementById('tab-' + tabName).classList.add('active');
+      const idx = ['survey', 'feed', 'matrix', 'summary', 'gemini', 'manage'].indexOf(tabName);
+      if (idx !== -1) {
+        document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+      }
+
+      if (tabName === 'feed') renderFeed(document.getElementById('feedFilter').value);
+      if (tabName === 'matrix') renderMatrix();
+      if (tabName === 'summary') renderSummary();
+      if (tabName === 'gemini') refreshGeminiPrompt();
+      if (tabName === 'manage') {
+        renderCoachesUI();
+        renderManagePlayersUI();
+      }
+      window.scrollTo(0, 0);
+    };
+
+    // Score updater synced to Firestore
+    window.updateScore = async function(id, attr, val) {
+      const p = window.appState.players.find(x => x.id === id);
+      if (p) {
+        p[attr] = parseInt(val);
+        renderMatrix();
+        try {
+          await setDoc(doc(db, 'players', p.id), p);
+        } catch (e) {
+          console.error("Firestore score update error:", e);
+        }
+      }
+    };
+
+    // Modals
+    window.openAddPlayerModal = () => document.getElementById('addPlayerModal').style.display = 'flex';
+    window.openAddCoachModal = () => document.getElementById('addCoachModal').style.display = 'flex';
+    window.openClearFeedModal = () => {
+      document.getElementById('clearFeedPassword').value = '';
+      document.getElementById('clearFeedModal').style.display = 'flex';
+    };
+    window.openImportModal = () => {
+      document.getElementById('importPassword').value = '';
+      document.getElementById('importFileInput').value = '';
+      document.getElementById('importModal').style.display = 'flex';
+    };
+    window.openRubricModal = () => document.getElementById('rubricModal').style.display = 'flex';
+    window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+
+    // Edit Player Number & Position Modal
+    window.openEditPositionModal = function(id) {
+      const p = window.appState.players.find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('editPositionPlayerId').value = p.id;
+      document.getElementById('editPositionPlayerName').textContent = p.name;
+      document.getElementById('editPlayerNumber').value = p.number || '';
+      document.getElementById('editPositionCustom').value = p.pos || '';
+      document.getElementById('editPositionPreset').value = '';
+      document.getElementById('editPositionModal').style.display = 'flex';
+    };
+
+    window.handlePresetPick = function(val) {
+      if (val) {
+        document.getElementById('editPositionCustom').value = val;
+      }
+    };
+
+    window.saveUpdatedPosition = async function() {
+      const id = document.getElementById('editPositionPlayerId').value;
+      const newPos = document.getElementById('editPositionCustom').value.trim();
+      const newNumber = document.getElementById('editPlayerNumber').value.trim();
+      if (!newPos) {
+        alert("Please specify a position.");
+        return;
+      }
+
+      const p = window.appState.players.find(x => x.id === id);
+      if (p) {
+        p.pos = newPos;
+        p.number = newNumber;
+        closeModal('editPositionModal');
+        renderManagePlayersUI();
+        renderMatrix();
+        renderSummary();
+
+        try {
+          await setDoc(doc(db, 'players', p.id), p);
+        } catch (e) {
+          console.error("Error saving player update to Firestore:", e);
+          alert("Error saving update: " + e.message);
+        }
+      }
+    };
+
+    // Clear Feed with Password Authentication
+    window.executeClearFeed = async function() {
+      const inputPass = document.getElementById('clearFeedPassword').value;
+      if (inputPass !== "TroyCowboys!!") {
+        alert("Incorrect password! Unable to clear feed.");
+        return;
+      }
+
+      closeModal('clearFeedModal');
+
+      try {
+        const snapshot = await getDocs(collection(db, 'reviews'));
+        const batch = writeBatch(db);
+        snapshot.forEach(docSnap => {
+          batch.delete(docSnap.ref);
+        });
+        await batch.commit();
+
+        window.appState.feed = [];
+        renderFeed('ALL');
+        alert("✓ Staff feedback feed has been completely cleared.");
+      } catch (err) {
+        console.error("Error clearing feed:", err);
+        alert("Error clearing feed: " + err.message);
+      }
+    };
+
+    // Add Player synced to Firestore
+    window.saveNewPlayer = async function() {
+      const name = document.getElementById('newPlayerName').value.trim();
+      const number = document.getElementById('newPlayerNumber').value.trim();
+      const pos = document.getElementById('newPlayerPos').value.trim() || 'Athlete';
+      if (!name) return;
+
+      const p = {
+        id: 'p_' + Date.now(),
+        number: number,
+        name: name,
+        pos: pos,
+        courage: 3,
+        speed: 3,
+        leverage: 3,
+        iq: 3,
+        notes: ''
+      };
+
+      closeModal('addPlayerModal');
+      document.getElementById('newPlayerName').value = '';
+      document.getElementById('newPlayerNumber').value = '';
+      document.getElementById('newPlayerPos').value = '';
+
+      try {
+        await setDoc(doc(db, 'players', p.id), p);
+      } catch (e) {
+        console.error("Firestore add player error:", e);
+      }
+    };
+
+    // Delete Player from Firestore
+    window.deletePlayer = async function(id) {
+      if (confirm("Remove player from roster?")) {
+        try {
+          await deleteDoc(doc(db, 'players', id));
+        } catch (e) {
+          console.error("Firestore delete player error:", e);
+        }
+      }
+    };
+
+    // Add Coach synced to Firestore
+    window.saveNewCoach = async function() {
+      const name = document.getElementById('newCoachName').value.trim();
+      if (!name) return;
+      closeModal('addCoachModal');
+      document.getElementById('newCoachName').value = '';
+
+      const updatedCoaches = [...window.appState.coaches, name];
+      try {
+        await setDoc(doc(db, 'meta', 'staff'), { list: updatedCoaches });
+      } catch (e) {
+        console.error("Firestore save coach error:", e);
+      }
+    };
+
+    // Delete Coach from Firestore
+    window.deleteCoach = async function(idx) {
+      if (confirm("Remove coach from active staff list?")) {
+        const updatedCoaches = window.appState.coaches.filter((_, i) => i !== idx);
+        try {
+          await setDoc(doc(db, 'meta', 'staff'), { list: updatedCoaches });
+        } catch (e) {
+          console.error("Firestore delete coach error:", e);
+        }
+      }
+    };
+
+    // COMPLETE BACKUP EXPORT (ALL DATA + NUMBERS + FEED + RATINGS + NOTES + COACHES)
+    window.exportCompleteTeamBackup = function() {
+      const backupData = {
+        version: "2.1",
+        exportTimestamp: Date.now(),
+        exportDate: new Date().toISOString(),
+        teamName: "Troy Cowboys 10U",
+        coaches: window.appState.coaches,
+        players: window.appState.players,
+        feed: window.appState.feed
+      };
+
+      const jsonStr = JSON.stringify(backupData, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Troy_Cowboys_10U_Complete_Backup_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+    };
+
+    // PASSWORD-PROTECTED IMPORT (JSON FULL BACKUP OR CSV ROSTER)
+    window.executePasswordProtectedImport = async function() {
+      const password = document.getElementById('importPassword').value;
+      if (password !== "TroyCowboys!!") {
+        alert("Incorrect password! Import authorization denied.");
+        return;
+      }
+
+      const fileInput = document.getElementById('importFileInput');
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Please choose a backup file to import.");
+        return;
+      }
+
+      closeModal('importModal');
+
+      const fileName = file.name.toLowerCase();
+      const reader = new FileReader();
+
+      reader.onload = async function(e) {
+        const content = e.target.result;
+        try {
+          if (fileName.endsWith('.json')) {
+            // JSON Complete System Import
+            const parsed = JSON.parse(content);
+
+            // 1. Restore Coaches
+            if (Array.isArray(parsed.coaches) && parsed.coaches.length > 0) {
+              await setDoc(doc(db, 'meta', 'staff'), { list: parsed.coaches });
+            }
+
+            // 2. Restore Players
+            if (Array.isArray(parsed.players)) {
+              for (const p of parsed.players) {
+                if (p.id && p.name) {
+                  await setDoc(doc(db, 'players', p.id), p);
+                }
+              }
+            }
+
+            // 3. Restore Feed Reviews
+            if (Array.isArray(parsed.feed)) {
+              for (const r of parsed.feed) {
+                const rId = r.id || ('f_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4));
+                await setDoc(doc(db, 'reviews', rId), r);
+              }
+            }
+
+            alert("✓ Complete system backup (Roster, Sliders, Notes, Feed & Staff) successfully restored into cloud database!");
+
+          } else if (fileName.endsWith('.csv')) {
+            // CSV Roster Import
+            await importRosterCSVContent(content);
+          } else {
+            alert("Unsupported file format. Please upload .json or .csv.");
+          }
+        } catch (err) {
+          console.error("Import processing error:", err);
+          alert("Error processing file: " + err.message);
+        }
+      };
+
+      reader.readAsText(file);
+    };
+
+    async function importRosterCSVContent(csvContent) {
+      const lines = csvContent.split(/\r?\n/).filter(line => line.trim().length > 0);
+      if (lines.length <= 1) {
+        alert("The uploaded CSV is empty or only contains headers.");
+        return;
+      }
+
+      function parseCsvRow(rowStr) {
+        const result = [];
+        let insideQuote = false;
+        let entry = '';
+        for (let i = 0; i < rowStr.length; i++) {
+          const char = rowStr[i];
+          if (char === '"') {
+            if (insideQuote && rowStr[i+1] === '"') {
+              entry += '"';
+              i++;
+            } else {
+              insideQuote = !insideQuote;
+            }
+          } else if (char === ',' && !insideQuote) {
+            result.push(entry.trim());
+            entry = '';
+          } else {
+            entry += char;
+          }
+        }
+        result.push(entry.trim());
+        return result;
+      }
+
+      let count = 0;
+      for (let i = 1; i < lines.length; i++) {
+        const cols = parseCsvRow(lines[i]);
+        // Handle format with or without Jersey Number as first column
+        let number = '';
+        let name = '';
+        let pos = 'Athlete';
+        let courage = 3, speed = 3, leverage = 3, iq = 3;
+        let notes = '';
+
+        if (cols[0] && cols[0].replace('#','').trim().match(/^\d+$/)) {
+          // Format has Number in column 0
+          number = cols[0].replace('#','').trim();
+          name = cols[1];
+          pos = cols[2] || 'Athlete';
+          courage = Math.min(5, Math.max(1, parseInt(cols[3]) || 3));
+          speed = Math.min(5, Math.max(1, parseInt(cols[4]) || 3));
+          leverage = Math.min(5, Math.max(1, parseInt(cols[5]) || 3));
+          iq = Math.min(5, Math.max(1, parseInt(cols[6]) || 3));
+          notes = cols[7] || '';
+        } else {
+          // Format has Name in column 0
+          name = cols[0];
+          pos = cols[1] || 'Athlete';
+          courage = Math.min(5, Math.max(1, parseInt(cols[2]) || 3));
+          speed = Math.min(5, Math.max(1, parseInt(cols[3]) || 3));
+          leverage = Math.min(5, Math.max(1, parseInt(cols[4]) || 3));
+          iq = Math.min(5, Math.max(1, parseInt(cols[5]) || 3));
+          notes = cols[6] || '';
+        }
+
+        if (!name) continue;
+
+        const existing = window.appState.players.find(p => p.name.toLowerCase() === name.toLowerCase());
+        const pId = existing ? existing.id : ('p_' + Date.now() + '_' + i);
+
+        const playerObj = {
+          id: pId,
+          number: number || (existing ? existing.number : ''),
+          name: name,
+          pos: pos,
+          courage: courage,
+          speed: speed,
+          leverage: leverage,
+          iq: iq,
+          notes: notes || (existing ? existing.notes : '')
+        };
+
+        await setDoc(doc(db, 'players', pId), playerObj);
+        count++;
+      }
+      alert(`✓ Successfully imported ${count} roster player(s) into the cloud database!`);
+    }
+
+    // CSV Export: Summary Table
+    window.exportSummaryCSV = function() {
+      let csv = "Jersey #,Player Name,Current Position,Contact Courage,Speed,Size & Leverage,Processing,Recommended Fit\n";
+      const sorted = [...window.appState.players].sort((a,b) => (parseInt(a.number)||999) - (parseInt(b.number)||999));
+      sorted.forEach(p => {
+        const rec = window.calcPosition(p.courage, p.speed, p.leverage, p.iq);
+        csv += `"${p.number || ''}","${p.name}","${p.pos}",${p.courage},${p.speed},${p.leverage},${p.iq},"${rec}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Troy_Cowboys_10U_Summary_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+    };
+
+    // CSV Export: Full Roster & Ratings
+    window.exportFullRosterCSV = function() {
+      let csv = "Jersey #,Player Name,Current Position,Contact Courage (1-5),Speed & Movement (1-5),Size & Leverage (1-5),Processing (1-5),Coach Notes\n";
+      const sorted = [...window.appState.players].sort((a,b) => (parseInt(a.number)||999) - (parseInt(b.number)||999));
+      sorted.forEach(p => {
+        const safeNotes = (p.notes || '').replace(/"/g, '""');
+        csv += `"${p.number || ''}","${p.name}","${p.pos || 'Athlete'}",${p.courage || 3},${p.speed || 3},${p.leverage || 3},${p.iq || 3},"${safeNotes}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Troy_Cowboys_10U_Roster_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+    };
+
+    // Survey Submission synced to Firestore
+    document.getElementById('surveyForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerText = 'Syncing Review to Cloud...';
+
+      const entry = {
+        coach: document.getElementById('coachSelect').value,
+        date: document.getElementById('surveyDate').value,
+        riser: document.getElementById('inputRiser').value,
+        struggler: document.getElementById('inputStruggler').value,
+        miscast: document.getElementById('inputMiscast').value,
+        scheme: document.getElementById('inputScheme').value,
+        timestamp: Date.now()
+      };
+
+      try {
+        await addDoc(collection(db, 'reviews'), entry);
+        document.getElementById('inputRiser').value = '';
+        document.getElementById('inputStruggler').value = '';
+        document.getElementById('inputMiscast').value = '';
+        document.getElementById('inputScheme').value = '';
+        alert('✓ Review successfully synced with coaching staff!');
+        switchTab('feed');
+      } catch (err) {
+        console.error("Firestore review error:", err);
+        alert('Error saving review to cloud. Please check connection or Firestore permissions.');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Submit Weekly Review';
+      }
+    });
+
+    document.getElementById('feedFilter').addEventListener('change', (e) => {
+      renderFeed(e.target.value);
+    });
+
+    // Reset cloud data to team baseline
+    window.resetToTeamDefaults = async function() {
+      if (confirm('Reset entire cloud database to default Troy Cowboys roster and reviews?')) {
+        try {
+          await setDoc(doc(db, 'meta', 'staff'), { list: DEFAULT_COACHES });
+          for (const p of DEFAULT_PLAYERS) {
+            await setDoc(doc(db, 'players', p.id), p);
+          }
+          for (const r of DEFAULT_FEED) {
+            await setDoc(doc(db, 'reviews', r.id), r);
+          }
+          alert('Cloud data successfully restored to team defaults.');
+        } catch (e) {
+          alert('Error resetting cloud data: ' + e.message);
+        }
+      }
+    };
+
+    // Live Real-Time Firestore Synchronization
+    async function startFirestoreSync() {
+      try {
+        const cloudStatus = document.getElementById('cloudStatus');
+        const syncText = document.getElementById('syncText');
+
+        // 1. Staff Listener
+        onSnapshot(doc(db, 'meta', 'staff'), async (snapshot) => {
+          if (snapshot.exists()) {
+            window.appState.coaches = snapshot.data().list || DEFAULT_COACHES;
+          } else {
+            await setDoc(doc(db, 'meta', 'staff'), { list: DEFAULT_COACHES });
+          }
+          renderCoachesUI();
+        });
+
+        // 2. Players Real-time Listener
+        onSnapshot(collection(db, 'players'), async (snapshot) => {
+          if (snapshot.empty) {
+            for (const p of DEFAULT_PLAYERS) {
+              await setDoc(doc(db, 'players', p.id), p);
+            }
+          } else {
+            const players = [];
+            snapshot.forEach(doc => players.push({ id: doc.id, ...doc.data() }));
+            window.appState.players = players;
+            renderMatrix();
+            renderSummary();
+            renderManagePlayersUI();
+          }
+        });
+
+        // 3. Reviews Feed Real-time Listener
+        onSnapshot(collection(db, 'reviews'), async (snapshot) => {
+          if (snapshot.empty) {
+            window.appState.feed = [];
+            renderFeed(document.getElementById('feedFilter').value);
+          } else {
+            const feed = [];
+            snapshot.forEach(doc => feed.push({ id: doc.id, ...doc.data() }));
+            feed.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+            window.appState.feed = feed;
+            renderFeed(document.getElementById('feedFilter').value);
+          }
+        });
+
+        syncText.innerText = 'Live Cloud Active';
+        cloudStatus.style.background = 'rgba(16, 185, 129, 0.2)';
+        cloudStatus.style.color = '#10b981';
+
+      } catch (err) {
+        console.error("Firebase connection error:", err);
+        document.getElementById('syncText').innerText = 'Cloud Permission Needed';
+        document.getElementById('cloudStatus').style.background = 'rgba(239, 68, 68, 0.2)';
+        document.getElementById('cloudStatus').style.color = '#ef4444';
+      }
+    }
+
+    // Initial render and launch sync
+    renderCoachesUI();
+    renderManagePlayersUI();
+    renderMatrix();
+    renderFeed();
+    renderSummary();
+    startFirestoreSync();
+  </script>
+</body>
+</html>
